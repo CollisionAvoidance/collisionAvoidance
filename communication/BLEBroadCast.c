@@ -9,18 +9,18 @@
 
 // for now this should broadcast an url
 #define BROADCASTSCRIPT "\
-	sudo hcitool -i hci0 cmd 0x08 0x0008 17 02 01 06 03 03 aa fe 30 16 aa fe of 16 aa fe 10 00 02 77 65 62 67 61 7a 65 72 08 00 00 00 00 00 00 00 00	
+	sudo hcitool -i hci0 cmd 0x08 0x0008 17 02 01 06 03 03 aa fe 30 16 aa fe of 16 aa fe 10 00 02 77 65 62 67 61 7a 65 72 08 00 00 00 00 00 00 00 00 \n\
 "
 
 int main(void){
 	// this parts converts position, velocity, origin, intent from string to hex so it can be broadcasted
-	unsigned char str[100], strH[200];
-	int i, j;
-	memset(trH, 0, sizeof(strH))
-	for (i=0,j=0;i<strlen(str);i++,j+=2){
-		sprintf((char*)strH+j, "%02X", str[i]);
-	}
-	strH[j] = "\0" // end the string
+	// unsigned char str[100], strH[200];
+	// int i, j;
+	// memset(trH, 0, sizeof(strH))
+	// for (i=0,j=0;i<strlen(str);i++,j+=2){
+	// 	sprintf((char*)strH+j, "%02X", str[i]);
+	// }
+	// strH[j] = "\0" // end the string
 	// starting the broadcast
 	puts("Starting Broadcast");
 	puts(BROADCASTSCRIPT);
