@@ -14,35 +14,41 @@ double global_time = 0; // initializing total traffic time for simulation
 float standard_width = 10;
 double car_radius = 10; // standard
 // below are classes for testing cases.
-
+int Case_count = 0 ;
+int Car_total = 0;
 
 class CarInfo{
 public: 
-	int ID; // ID starts at 1
+	//static int Car_total;
+	int ID;
 	pair<double,double> position,velocity,acceleration;
 	double radius = car_radius;
 	double toa; // time of arrival
 	int direction;
 	int intention;
+	CarInfo(){
+		Car_total += 1;
+		ID = Car_total;	
+	}
 	CarInfo(int id){
-		ID = id;
+		Car_total += 1;
+		ID = Car_total;
 	}
 };
 
-
 class Car{
-public:
-	static int Car_total;
-	int ID; // ID starts at 1
+public: 
 	CarInfo info; // CarInfo stored in a case.
+	Car(){
+
+	}
 	Car(CarInfo a){
 		Car_total++; 
-		ID = Car_total;
-		info.ID = this->ID;
+		info.ID = Car_total;
 		info.position = a.position;
 		info.velocity = a.velocity;
 		info.acceleration = a.acceleration;
-		info.radius = a.car_radius;
+		info.radius = a.radius;
 		info.toa = a.toa; // time of arrival
 	    info.direction = a.direction;
 	    info.intention = a.intention;
@@ -51,14 +57,14 @@ public:
 	void algorithm(CarInfo car_a,CarInfo car_b, CarInfo car_c){ // needs information from other cars too.
 		cout << "tehehhehehehhehe i am mad" << endl; 
 	}
-	Output_generate(){
+	void Output_generate(){
 		for (double i = 0; i <= global_time; i += 0.5){
-			this-> algorithm(); // algorithm supposedly updated velocity
-			this-> position.first += this->velocity.first*0.5 // time_step = 0.5
-			this-> position.second += this->velocity.second*0.5
+			//this-> algorithm(); // algorithm supposedly updated velocity
+			this-> info.position.first += this->info.velocity.first * 0.5; // time_step = 0.5
+			this-> info.position.second += this->info.velocity.second * 0.5;
 			ofstream myfile;
 			myfile.open("simulation_result.txt");
-			myfile << "car " << this->ID << "position x" << this->position.first << "position y" << this->position.second << "velocity x" << this->velocity.first << "velocity y" << this->velocity.second << "time " << i;
+			myfile << "car " << this->info.ID << "position x" << this->info.position.first << "position y" << this->info.position.second << "velocity x" << this->info.velocity.first << "velocity y" << this->info.velocity.second << "time " << i;
 			myfile.close();
 		}
 	}
@@ -66,7 +72,7 @@ public:
 
 class Case{
 public:
-	static int Case_count;
+	//static int Case_count;
 	int ID;
 	int inte_a; // intention of car a.
 	int inte_b;
@@ -77,9 +83,9 @@ public:
 		inte_a = rand()%3;
 		inte_b = rand()%3;
 		inte_c = rand()%3;
-		Car a = new Car();
-		Car b = new Car();
-		Car c = new Car();
+		Car a; // should be stored on heap, change later
+		Car b;
+		Car c;
 		a.algorithm(a.info, b.info, c.info);
 		b.algorithm(b.info, a.info, b.info);
 		c.algorithm(c.info, b.info, a.info);
@@ -119,7 +125,7 @@ int main(){
 	randomness_factor.push_back(factor1);
 	randomness_factor.push_back(factor2);
 	randomness_factor.push_back(factor3);
-	case_generator(randomness_factor);
-	case_output();
+	//case_generator(randomness_factor);
+	//case_output();
 
 }
