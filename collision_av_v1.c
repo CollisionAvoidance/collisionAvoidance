@@ -30,7 +30,7 @@
 #define V_MAX 30   			// in cm/s. Speed limit in intersection scenario
 #define A_MAX 15			// in cm/s^2. Acceleration limit
 #define ITER_NUM 10			// Number of iterations in the optimization process
-#define MINUS_FACTOR 0.7	// For modifying the optimal velocity in the optimization iterations
+#define MINUS_FACTOR 0.6	// For modifying the optimal velocity in the optimization iterations
 #define PLUS_FACTOR 1.1
 
 
@@ -176,7 +176,6 @@ void new_decision (struct car * car) {
 	car->compromise->vy0 = car->vy;	
 
 	car->compromise->t_start = get_start_t(*car);
-	printf("t_start = %.2f\n", car->compromise->t_start);
 
 
 	car->compromise->t_stop = car->t_enter;			// Does not really matter for now because it 
@@ -253,8 +252,6 @@ void set_decision (struct car * car, numbers a_x, numbers a_y, numbers vx1, numb
 	car->t_enter = car->compromise->t_stop;
 
 
-	printf("New t_stop for car %s = %.2f\n", car->id, car->compromise->t_stop);
-
 }
 /*
 // Version where I use get_vx1(*car) as a separate function
@@ -298,7 +295,6 @@ void new_vel_turn (struct car * c) {
 
     c->vx_turn = rotation_matrix_x(c->compromise->vx1, c->compromise->vy1, c->intent);
     c->vy_turn = rotation_matrix_y(c->compromise->vx1, c->compromise->vy1, c->intent);
-    printf("Car %s new vel turn is: %.2f,%.2f\n", c->id, c->vx_turn, c->vy_turn);
 
 }
 
@@ -344,9 +340,7 @@ void optimizedFunction (struct car ** all_cars) {
 	numbers * v_opt_x = malloc(CAR_NUM * sizeof(numbers)); // optimal velocity with which the cars enter the intersection
 	numbers * v_opt_y = malloc(CAR_NUM * sizeof(numbers)); // optimal velocity with which the cars enter the intersection
 
-	numbers v_magnitude;
-	numbers unit_x, unit_y;
-	numbers a_max_x, a_max_y;
+	numbers v_magnitude, unit_x, unit_y, a_max_x, a_max_y;
 
 
 	// Compute the max acceleration velocities for all cars using v^2 = v0^2 + 2ad
@@ -380,10 +374,6 @@ void optimizedFunction (struct car ** all_cars) {
 		}		
 
 
-		//printf("d = %.2f, ax = %.2f, velocity x at maximum acceleration =  %.2f\n", fabs(all_cars[i]->compromise->rx1 - all_cars[i]->compromise->rx0), a_max_x, v_amax_x[i]);
-		//printf("ay = %.2f, velocity y at maximum acceleration =  %.2f\n", a_max_y, v_amax_y[i]);
-		//printf("magnitude of above = %.2f\n", sqrt(v_amax_x[i] * v_amax_x[i] + v_amax_y[i] * v_amax_y[i]));
-
 		
 		// If the velocity that yields the maximum acceleration is smaller than the speed limit, set it as the threshold
 		if (sqrt(v_amax_x[i] * v_amax_x[i] + v_amax_y[i] * v_amax_y[i]) <= V_MAX) {		// if (v_amax <= V_MAX) 
@@ -393,8 +383,6 @@ void optimizedFunction (struct car ** all_cars) {
 			set_decision(all_cars[i], a_max_x, a_max_y, v_opt_x[i], v_opt_y[i]);	// Temporary to test collision rate
 			new_vel_turn(all_cars[i]);
 			new_t_exit(all_cars[i]);
-
-			printf("ax = %.2f, ay = %.2f\n", a_max_x, a_max_y);
 
 
 		}
@@ -410,7 +398,6 @@ void optimizedFunction (struct car ** all_cars) {
 			set_decision(all_cars[i], a_max_x, a_max_y, v_opt_x[i], v_opt_y[i]);
 			new_vel_turn(all_cars[i]);
 			new_t_exit(all_cars[i]);
-			printf("ax = %.2f, ay = %.2f\n", a_vmax_x, a_vmax_y);
 
 		}
 
@@ -418,99 +405,37 @@ void optimizedFunction (struct car ** all_cars) {
 	}
 	
 	int car_decrease = 0;
+	int it = 0;
 
-		int it = 0;
-		while (it < ITER_NUM) {  // Is this checked sequentially or in parallel? 
+	while (is_collision(all_cars)) {  // Is this checked sequentially or in parallel? 
+
 			
+		v_opt_x[car_decrease] *= MINUS_FACTOR;
+		v_opt_y[car_decrease] *= MINUS_FACTOR;
 
-			if (is_collision(all_cars)) {		// Reduce one of the car's velocities
-				
-				v_opt_x[car_decrease] *= MINUS_FACTOR;
-				v_opt_y[car_decrease] *= MINUS_FACTOR;
+		int signx;
+		if (all_cars[car_decrease]->vx < 0) signx = -1;
+		else signx = 1;
 
-				int signx;
-				if (all_cars[car_decrease]->vx < 0) signx = -1;
-				else signx = 1;
+		int signy;
+		if (all_cars[car_decrease]->vy < 0) signy = -1;
+		else signy = 1;
 
-				int signy;
-				if (all_cars[car_decrease]->vy < 0) signy = -1;
-				else signy = 1;
-
-				a_max_x = 0.5 * (v_opt_x[car_decrease]*v_opt_x[car_decrease] - (all_cars[car_decrease]->vx)*(all_cars[car_decrease]->vx)) / (ACCELERATION_DISTANCE*signx);
-				a_max_y = 0.5 * (v_opt_y[car_decrease]*v_opt_y[car_decrease] - (all_cars[car_decrease]->vy)*(all_cars[car_decrease]->vy)) / (ACCELERATION_DISTANCE*signy);
+		a_max_x = 0.5 * (v_opt_x[car_decrease]*v_opt_x[car_decrease] - (all_cars[car_decrease]->vx)*(all_cars[car_decrease]->vx)) / (ACCELERATION_DISTANCE*signx);
+		a_max_y = 0.5 * (v_opt_y[car_decrease]*v_opt_y[car_decrease] - (all_cars[car_decrease]->vy)*(all_cars[car_decrease]->vy)) / (ACCELERATION_DISTANCE*signy);
 
 
-				printf("Modified ax = %.2f, ay = %.2f\n", a_max_x, a_max_y);
-
-				printf("Modifying decision of car %d\n", car_decrease);
-				set_decision(all_cars[car_decrease], a_max_x, a_max_y, v_opt_x[car_decrease], v_opt_y[car_decrease]);
-				new_vel_turn(all_cars[car_decrease]);
-				new_t_exit(all_cars[car_decrease]);
-				
-				car_decrease = (car_decrease+1) % CAR_NUM;
-
-			}
-			
-			else {
-				printf("NO COLLISIONS ANYMORE..............\n");
-				break;
-			}
-
-			car_decrease = (car_decrease+1) % CAR_NUM;
-			it++;	
-		}
-}
-/*
-
-	int car_decrease = 0;
-
-	//if (!collison(all_cars, v_opt_x, v_opt_y)) {		// Try optimal case: v is maximized and no collisions
-	//	return;
-	//}
-
-	//else {		// maximum velocities DO cause collision
-
-		int it = 0;
-		while (it < ITER_NUM) {  // Is this checked sequentially or in parallel? 
-			
-			// compute magnitude of velocity vector
-			v_magnitude = sqrt((all_cars[car_decrease]->vx)*(all_cars[car_decrease]->vx) + (all_cars[car_decrease]->vy)*(all_cars[car_decrease]->vy));
-			
-			// divide each component by the magnitude to fing unit vectors
-			unit_x = (all_cars[car_decrease]->vx) / v_magnitude;
-			unit_y = (all_cars[car_decrease]->vy) / v_magnitude;
-
-			a_max_x = 0.5 * (v_opt_x[car_decrease]*v_opt_x[car_decrease] - (all_cars[car_decrease]->vx)*(all_cars[car_decrease]->vx)) / (ACCELERATION_DISTANCE * unit_x);
-			a_max_y = 0.5 * (v_opt_y[car_decrease]*v_opt_y[car_decrease] - (all_cars[car_decrease]->vy)*(all_cars[car_decrease]->vy)) / (ACCELERATION_DISTANCE * unit_y);
-
-			printf("Modifying decision of car %d\n", car_decrease);
-			set_decision(all_cars[car_decrease], a_max_x, a_max_y, v_opt_x[car_decrease], v_opt_y[car_decrease]);
-			new_vel_turn(all_cars[car_decrease]);
-			new_t_exit(all_cars[car_decrease]);
-			
-
-			printf("Here...............................\n");
-
-
-			if (is_collision(all_cars)) {		// Reduce one of them - separate function to select which one
-				printf("COLLISION DETECTED...............................\n");
-				v_opt_x[car_decrease] *= MINUS_FACTOR;
-				v_opt_x[car_decrease] *= MINUS_FACTOR;
-
-				all_cars[car_decrease]->compromise->vx1 *= MINUS_FACTOR;
-				all_cars[car_decrease]->compromise->vy1 *= MINUS_FACTOR;
-
-			}
-			else {
-				break;
-			}	
-			car_decrease = (car_decrease+1) % CAR_NUM;
-
-			it++;
+		set_decision(all_cars[car_decrease], a_max_x, a_max_y, v_opt_x[car_decrease], v_opt_y[car_decrease]);
+		new_vel_turn(all_cars[car_decrease]);
+		new_t_exit(all_cars[car_decrease]);
 		
+		car_decrease = (car_decrease+1) % CAR_NUM;
 
-		}
-*/
+		it++;	
+
+	}
+}
+
 
 
 
@@ -626,7 +551,7 @@ void DU (struct car ** all_cars, char * mycar) {
 	strcat(filename, ".txt");
 
 	fptr = fopen(filename,"w");						// Open/create output file
-	printf("Opening file: %s\n", filename);
+	//printf("Opening file: %s\n", filename);
 
 
 	struct car * my_car = get_mycar(all_cars, mycar);	// Get a pointer to my car
@@ -643,12 +568,37 @@ void DU (struct car ** all_cars, char * mycar) {
 	//CA_make_decisions(cols, all_cars);	// Decision Unit
 	optimizedFunction(all_cars);
 
+	int i;
+	numbers v, v2, a;
+	numbers avg = 0;
+	numbers avg2 = 0;
+	numbers avg3 = 0;
+	for (i = 0; i < CAR_NUM; i++) {
+		v = sqrt(all_cars[i]->vx_turn*all_cars[i]->vx_turn + all_cars[i]->vy_turn*all_cars[i]->vy_turn);
+		printf("Car %d velocity = %.2f\n", i,  v);
+		v2 = sqrt(all_cars[i]->compromise->vx0*all_cars[i]->compromise->vx0 + all_cars[i]->compromise->vy0*all_cars[i]->compromise->vy0);
+		printf("Car %d initial velocity = %.2f\n", i,  v2); 
+		a = sqrt(all_cars[i]->compromise->ax*all_cars[i]->compromise->ax + all_cars[i]->compromise->ay*all_cars[i]->compromise->ay);
+		printf("Car %d initial velocity = %.2f\n", i,  v2); 
+		avg = avg + v;
+		avg2 = avg2 + v2;
+		avg3 = avg3 + a;
+	}
+
+	printf("Average velocity = %.2f\n\n", (avg/CAR_NUM));
+	printf("Average initial velocity = %.2f\n\n", (avg2/CAR_NUM));
+	printf("Improvement = %.2f\n\n", (avg/avg2));
+	printf("Acceleration = %.2f\n\n", (a/CAR_NUM));
+
+
+
+
 /*
 	print_decision(*all_cars[0]);
 	print_decision(*all_cars[1]);
 	print_decision(*all_cars[2]);
 */
-	print_decision(*my_car);
+	//print_decision(*my_car);
 	CA_file_output(my_car, fptr);	// Write output in the file
 
 	fclose(fptr);		// Close output file

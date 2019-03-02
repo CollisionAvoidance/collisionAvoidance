@@ -243,7 +243,7 @@ numbers get_y_at_t (struct car_results * car, numbers t) {
 void file_output (struct car_results ** cars) {
 	numbers t_final = max_t_exit(cars) + 5;		// Final timestamp of the simulation
 												// When the last car exits + optional constant extra time
-
+	printf("Total time = %.2f s\n\n", t_final);
 	numbers timestep = t_final/TIMESTAMP_NUM;		// Size of the timestep (units of time).
 	
 	FILE * fptr;

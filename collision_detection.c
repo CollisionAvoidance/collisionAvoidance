@@ -11,7 +11,7 @@
 #include "collision_detection.h"
 
 
-#define RADIUS 1  // sqrt(LENGTH^2 * WIDTH^2)
+#define RADIUS 2  // sqrt(LENGTH^2 * WIDTH^2)
 
 // Width and length values taken from center to edge of car, so half the actual length of car
 
