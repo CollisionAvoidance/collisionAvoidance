@@ -1,47 +1,56 @@
 #include <iostream>
 #include "classcpp.h"
-int CarInfo::id_track = 0;
+int CarInfo::ID_track = 0;
+double Decision::ID_track = 0;
+int Car::ID_track = 0;
+int Collision::ID_track = 0;
+
 CarInfo::CarInfo(){
-	id_track++;
-	ID = id_track;
+	ID_track++;
+	ID = ID_track;
 }
 CarInfo::CarInfo(int id){
 	ID = id;
 }
 
-/*
-Car::Car(std::string a)
-{
-		this->In_info.ID = a;
-}
-
 Car::Car(CarInfo a)
 { 
-		this->IN_info.ID = a.ID;
-		this->IN_info.position = a.position;
-		this->IN_info.velocity = a.velocity;
-		this->IN_info.acceleration = a.acceleration;
-	    this->IN_info.direction = a.direction;
-	    this->IN_info.intention = a.intention;
+		ID_track++;
+		ID = ID_track;
+		IN_info.position = a.position;
+		IN_info.velocity = a.velocity;
+		IN_info.acceleration = a.acceleration;
 }
 
 //void Car::algorithm(CarInfo car_a,CarInfo car_b, CarInfo car_c){
 	// from another file. this is template placeholder
 //};
 
-Case::Case(){
-		this->inte_a = rand()%3;
-		this->inte_b = rand()%3;
-		this->inte_c = rand()%3;
-		Car a("1"); // should be stored on heap, change later
-		Car b("2");
-		Car c("3");
-		// a.algorithm(a.info, b.info, c.info); // placeholder
-		// b.algorithm(b.info, a.info, b.info); // placeholder
-		// c.algorithm(c.info, b.info, a.info); // placeholder
+//Case::Case(){
+		// placeholder for now
+		//inte_a = rand()%3;
+		//this->inte_b = rand()%3;
+		//this->inte_c = rand()%3;
+		//Car a("1"); // should be stored on heap, change later
+		//Car b("2");
+		//Car c("3");
+//}
+
+Collision::Collision(Car *first,Car *second,numbers time){
+	ID_track++;
+	ID = ID_track;
+	this->first = first;
+	this->second = second;
+	this->time = time;
 }
 
-Case::Case(std::string id){
+
+
+Decision::Decision(){
+	ID_track++;
+	ID = ID_track;
+}
+/*Case::Case(std::string id){
 		this->ID = id;
 		this->inte_a = rand()%3;
 		this->inte_b = rand()%3;
@@ -53,12 +62,6 @@ Case::Case(std::string id){
 		// b.algorithm(b.info, a.info, b.info); // placeholder
 		// c.algorithm(c.info, b.info, a.info); // placeholder
 }
-
-
-Decision::Decision(std::string id){
-	this->ID = id;
-}
-
 Intersection::Intersection(std::string id){
 	this->ID = id;
 }

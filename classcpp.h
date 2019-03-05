@@ -13,7 +13,7 @@ enum Direction{straight,left,right};
 
 class CarInfo{
 public: 
-	static int id_track;
+	static int ID_track;
 	int ID;
 	std::pair<numbers,numbers>position,velocity,acceleration;
 	numbers time; // the momoent the car enters the corresponding state
@@ -21,37 +21,46 @@ public:
 	CarInfo(int id);
 
 };
-/*
+
 class Decision {
-	std::string ID;
+public:
+	static double ID_track;
+	double ID;
 	numbers vx0, vy0, vx1, vy1; 				    // Velocities before and after accelerating
 	numbers ax, ay;							        // Acceleration value. 0 initially
 	numbers t_start, t_stop, new_t_exit;		// times when it starts and stops accelerating
 	numbers rx0, ry0, rx1, ry1;				     // Points in the trajectory where they start and stop accelerating.
-	Decision(std::string id);
+	Decision();
 };
 
 class Car{
 public: 
+	static int ID_track;
+	int ID;
 	CarInfo IN_info; 
 	CarInfo DM_info; 
 	CarInfo XE_info;
 	CarInfo FI_info;
 	numbers toa; // time of arrival
 	Decision decision;
-	// Decision compromise[];
+	//Decision compromise[];
 	Direction dir;
 	Direction intent;
-	Car(std::string a);
 	Car(CarInfo a);
+	void algorithm(Car self, Car a, Car b);
 };
 
+
 class Collision{
+public:
+   static int ID_track;
+   int ID;
    numbers time;
    Car * first;
    Car * second;
+   Collision(Car *first,Car *second,numbers time);
 };
-
+/*
 class Case{
 public:
 	//static int Case_count;
