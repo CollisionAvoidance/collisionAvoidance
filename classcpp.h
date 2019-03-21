@@ -1,10 +1,16 @@
 #include <string>
+#include <iostream>
+#include <vector>
 /* variables defined but didn't used
 
 */
 #define NUM_PAIRS 3 // 3 choose 2 (#cars choose 2)
 #define CAR_NUM 3
-
+#define CAR_WIDTH 8.5 // cm
+#define ROAD_WIDTH 35 // cm
+#define SPEED_LIMIT 67 // cm/s
+#define VELOCITY_DEVIATION 5 // placeholder
+#define POSITION_DEVIATION 0.05 // placeholder
 typedef double numbers; // change to either double or float depending on the situation
 
 enum Direction{straight,left,right}; 
@@ -41,9 +47,8 @@ public:
 	CarInfo DM_info; 
 	CarInfo XE_info;
 	CarInfo FI_info;
-	numbers toa; // time of arrival
-	Decision decision;
-	//Decision compromise[];
+	numbers toa; //time of arrival
+	Decision decision; //Decision compromise[];
 	Direction dir;
 	Direction intent;
 	Car(CarInfo a);
@@ -70,12 +75,14 @@ public:
 	Direction inte_c;
 	Case(std::string ID);
 };
-
+*/
 class Intersection{
 public:
-	std::string ID;
-	Intersection(std::string id);
-	//int CaseID;
-	//int width; // the width of road in units of centimeters.
-};*/
+	static int ID_track;
+	int ID;
+	numbers width; // the width of road in units of centimeters.
+	std::vector<Car> Car_queue;
+	Intersection();
+	void Generate_Cars(int count);
+};
 // the class intersection can be different depending on the algorithm as an algorithm based on machine learning can have intesections stored in it as a training set.

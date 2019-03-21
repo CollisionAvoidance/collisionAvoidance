@@ -1,9 +1,14 @@
 #include <iostream>
+#include <stdlib.h>
+#include <cmath>
+#include <vector>
+#include <random>
 #include "classcpp.h"
 int CarInfo::ID_track = 0;
 double Decision::ID_track = 0;
 int Car::ID_track = 0;
 int Collision::ID_track = 0;
+int Intersection::ID_track = 0;
 
 CarInfo::CarInfo(){
 	ID_track++;
@@ -50,32 +55,44 @@ Decision::Decision(){
 	ID_track++;
 	ID = ID_track;
 }
-/*Case::Case(std::string id){
-		this->ID = id;
-		this->inte_a = rand()%3;
-		this->inte_b = rand()%3;
-		this->inte_c = rand()%3;
-		Car a("1"); // should be stored on heap, change later
-		Car b("2");
-		Car c("3");
-		// a.algorithm(a.info, b.info, c.info); // placeholder
-		// b.algorithm(b.info, a.info, b.info); // placeholder
-		// c.algorithm(c.info, b.info, a.info); // placeholder
+
+Intersection::Intersection(){
+	ID_track++;
+	ID = ID_track;
+	this->width = ROAD_WIDTH; // road width should at least have 2 lanes
+
 }
-Intersection::Intersection(std::string id){
-	this->ID = id;
+
+void Intersection::Generate_Cars(int count){
+
+	std::default_random_engine generator;
+    std::normal_distribution<double> velocity_distribution(SPEED_LIMIT,VELOCITY_DEVIATION);
+    std::normal_distribution<double> position_distribution(this->width/4*3,this->width/4*3*POSITION_DEVIATION);
+	for (int i= 0; i < count; i++){
+		numbers x_velocity = velocity_distribution(generator);
+		numbers x_position = position_distribution(generator);
+		// y_position is marked by toa. no need to put distribution.
+		CarInfo a;
+		a.velocity.first =  x_velocity; // x is normal
+		double rand_a = rand()%101*0.01*1;
+		int rand_b = rand()%2;
+		if (rand_b == 0) rand_b = -1;
+		else rand_b = 1;
+		a.velocity.second = SPEED_LIMIT + (5)*rand_a*rand_b;// y is uniform
+		a.position.first = x_position;
+		// a.toa put another distribution
+		Car b(a);
+		this->Car_queue.push_back(b);
+	}
+
 }
-void Output_generate(float global_time);
-		for (double i = 0; i <= global_time; i += 0.5){
-			//this-> algorithm(); // algorithm supposedly updated velocity
-			this-> info.position.first += this->info.velocity.first * 0.5; // time_step = 0.5
-			this-> info.position.second += this->info.velocity.second * 0.5;
-			ofstream myfile;
-			myfile.open("simulation_result.txt");
-			myfile << "car " << this->info.ID << "position x" << this->info.position.first << "position y" << this->info.position.second << "velocity x" << this->info.velocity.first << "velocity y" << this->info.velocity.second << "time " << i;
-			myfile.close();	*/	
 int main(){
-	CarInfo a;
-	std::cout << a.ID; // << endl;
+	std::cout << "hello"<< '\n';
+	Intersection a;
+	a.Generate_Cars(50);
+	for (int i=0; i<50; i++){
+		std::cout << "car "<< a.Car_queue[i].ID << " x position is " << a.Car_queue[i].IN_info.position.first << std::endl;
+	}
 	return 0;
-}	
+}
+
