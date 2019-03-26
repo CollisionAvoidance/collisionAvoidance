@@ -25,6 +25,7 @@ Car::Car(CarInfo a)
 		IN_info.position = a.position;
 		IN_info.velocity = a.velocity;
 		IN_info.acceleration = a.acceleration;
+		IN_info.time = a.time;
 }
 
 //void Car::algorithm(CarInfo car_a,CarInfo car_b, CarInfo car_c){
@@ -80,11 +81,31 @@ void Intersection::Generate_Cars(int count){
 		else rand_b = 1;
 		a.velocity.second = SPEED_LIMIT + (5)*rand_a*rand_b;// y is uniform
 		a.position.first = x_position;
+		a.time = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/10.0));
+		std::cout << "a.time is "<< a.time << std::endl; 
 		// a.toa put another distribution
 		Car b(a);
 		this->Car_queue.push_back(b);
 	}
 
+}
+void Intersection::Congestion_Analysis(){
+	numbers ini_time = 100;
+	numbers end_time = 0;
+	for (int i = 0; i< Car_queue.size(); i++){
+		if(this->Car_queue[i].IN_info.time < ini_time){
+			ini_time = this->Car_queue[i].IN_info.time;
+		}
+		// else : pass
+		/*if (this->Car_queue[i].FI_info.time > end_time){
+			end_time = this->Car_queue[i].FI_info.time;
+		}*/
+		// above: placeholder
+	}
+	std::cout << "first car entered at: " << ini_time << " second." << std::endl;
+	std::cout << "last car exited at: " << end_time << " second." << std::endl;
+	std::cout << "total time used: " << end_time - ini_time << " second." << std::endl;c
+	
 }
 int main(){
 	std::cout << "hello"<< '\n';
@@ -93,6 +114,8 @@ int main(){
 	for (int i=0; i<50; i++){
 		std::cout << "car "<< a.Car_queue[i].ID << " x position is " << a.Car_queue[i].IN_info.position.first << std::endl;
 	}
+	a.Congestion_Analysis();
+	// need random generator to work properly.
 	return 0;
 }
 

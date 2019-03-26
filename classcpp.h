@@ -52,6 +52,7 @@ public:
 	Direction dir;
 	Direction intent;
 	Car(CarInfo a);
+	Car();
 	void algorithm(Car self, Car a, Car b);
 };
 
@@ -84,5 +85,6 @@ public:
 	std::vector<Car> Car_queue;
 	Intersection();
 	void Generate_Cars(int count);
+	void Congestion_Analysis();
 };
 // the class intersection can be different depending on the algorithm as an algorithm based on machine learning can have intesections stored in it as a training set.

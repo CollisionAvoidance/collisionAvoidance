@@ -74,7 +74,7 @@ int v2v_collision(Car * first, Car * second, vector<Collision> col){
   if (t > 0 ){
     t += second->XE_info.time;
 
-    if ((t < first->FI_info.time) && (t < second->FI_info.time)) {  // Valid collision inside the intersection
+  /*  if ((t < first->FI_info.time) && (t < second->FI_info.time)) {  // Valid collision inside the intersection
       Collision a(first, second, t);
       col.push_back(a);
       return 1;
@@ -82,7 +82,12 @@ int v2v_collision(Car * first, Car * second, vector<Collision> col){
   }
   Collision b(first, second, 0);
   col.push_back(b);
-
+*/
+    // problem above: where is FI_info calculated? it can be uninitialized and cause seg fault
   return 0;
 }
 
+int main(){
+
+  return 0;
+}
