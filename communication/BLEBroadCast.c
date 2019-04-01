@@ -17,15 +17,18 @@ int main(int argc, char* argv[]){
     	char space[] = " "
     	char postion[] = argv[1];
     	char base_command[900] = "sudo hcitool -i hci0 cmd 0x08 0x0008 1e 02 01 1a 0c ff 18 01 ";
-    	strcat(base_command, speed)
-    	strcat(base_command, postion)
-    	fp = popen(base_command, "r")
+    	strcat(base_command, speed);
+    	strcat(base_command, postion);
+        char zero[100]="00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00";
+        strcat(base_command, zero);
+    	fp = popen(base_command, "r");
 	    if (fp == NULL) {
         	printf("Failed to run command\n" );
         	exit(1);
         }else{
-        	printf("Broadcasting")
+        	printf("Broadcasting");
         }
+        pclose(fp)
 
     }
 	return 0;
