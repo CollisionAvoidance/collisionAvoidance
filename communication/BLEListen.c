@@ -1,44 +1,33 @@
 #include<stdio.h>
-#include<sys/socket.h>
-#include<arpa/inet.h> //inet_addr
+#include <stdlib.h>
+
  
 int main()
 {
-    int socket_desc , new_socket , c;
-    struct sockaddr_in server , client;
-     
-    //Create socket
-    socket_desc = socket(AF_INET , SOCK_STREAM , 0);
-    if (socket_desc == -1)
-    {
-        printf("Could not create socket");
+    FILE *fp;
+    char var[1035];
+
+    /* Open the command for reading. */
+    setup_whitelist_1 = popen("sudo hcitool lescan lewladd B8:27:EB:16:89:BB", "r");
+    setup_whitelist_2 = popen("sudo hcitool lescan lewladd B8:27:EB:D3:61:02", "r")
+
+    fp = popen("sudo hcitool lescan --whitelist", "r");
+    if (fp == NULL) {
+        printf("Failed to run command\n" );
+        exit(1);
     }
-     
-    //Prepare the sockaddr_in structure
-    server.sin_family = AF_INET;
-    server.sin_addr.s_addr = INADDR_ANY;
-    server.sin_port = htons( 8888 );
-     
-    //Bind
-    if( bind(socket_desc,(struct sockaddr *)&server , sizeof(server)) < 0)
+    while (fgets(var, sizeof(var), fp) != NULL) 
     {
-        puts("bind failed");
+      printf("%s", var);
     }
-    puts("bind done");
-     
-    //Listen
-    listen(socket_desc , 3);
-     
-    //Accept and incoming connection
-    puts("Waiting for incoming connections...");
-    c = sizeof(struct sockaddr_in);
-    new_socket = accept(socket_desc, (struct sockaddr *)&client, (socklen_t*)&c);
-    if (new_socket<0)
-    {
-        perror("accept failed");
-    }
-     
-    puts("Connection accepted");
+    pclose(fp);
+
+    outputfile = fopen("text.txt", "a");
+    fprintf(outputfile,"%s\n",var);
+    fclose(outputfile);
+    /* close */
+    pclose(fp);
+
  
     return 0;
 }

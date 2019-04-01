@@ -1,32 +1,33 @@
-// before running the below code, remember to turn on the bluetooth module
-// 1. login to raspberry pi
-// 2. hciconfig -h 
-// 3. sudo hciconfig hci0 up // enable bluetooth device
-// 4. sudo hciconfig hci0 leadv 3 // set bluetooth device to advertise and not-connectable
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
-// for now this should broadcast an url
-#define BROADCASTSCRIPT "\
-	sudo hcitool -i hci0 cmd 0x08 0x0008 17 02 01 06 03 03 aa fe 30 16 aa fe of 16 aa fe 10 00 02 77 65 62 67 61 7a 65 72 08 00 00 00 00 00 00 00 00 \n\
-"
+int main(int argc, char* argv[]){
+	FILE *fp;
+	char command[900] = "sudo hcitool -i hci0 cmd 0x08 0x0008 1e 02 01 1a 0c ff 18 01 48 45 4c 4c 4f 57 4f 52 4c 44 00 00 00 00 00 00 00 00 00 00 00 00 00 00";
+	if argc == 1{
+		fp = popen(command, "r")
+	    if (fp == NULL) {
+        	printf("Failed to run command\n" );
+        	exit(1);
+        }
+    }else if argc >= 2{
+    	char speed[] = argv[0];
+    	char space[] = " "
+    	char postion[] = argv[1];
+    	char base_command[900] = "sudo hcitool -i hci0 cmd 0x08 0x0008 1e 02 01 1a 0c ff 18 01 ";
+    	strcat(base_command, speed)
+    	strcat(base_command, postion)
+    	fp = popen(base_command, "r")
+	    if (fp == NULL) {
+        	printf("Failed to run command\n" );
+        	exit(1);
+        }else{
+        	printf("Broadcasting")
+        }
 
-int main(void){
-	// this parts converts position, velocity, origin, intent from string to hex so it can be broadcasted
-	// unsigned char str[100], strH[200];
-	// int i, j;
-	// memset(trH, 0, sizeof(strH))
-	// for (i=0,j=0;i<strlen(str);i++,j+=2){
-	// 	sprintf((char*)strH+j, "%02X", str[i]);
-	// }
-	// strH[j] = "\0" // end the string
-	// starting the broadcast
-	puts("Starting Broadcast");
-	puts(BROADCASTSCRIPT);
-	puts("Starting now:");
-	system(BROADCASTSCRIPT);
+    }
 	return 0;
 }
 
-// next step: read the bluetooth manual, figure out what 2 byte code I need to use
